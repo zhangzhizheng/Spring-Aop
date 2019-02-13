@@ -6,7 +6,8 @@ import org.springframework.aop.MethodBeforeAdvice;
 
 /**
  * 前置增强
- * 要实现
+ * 要实现MethodBeforeAdvice接口
+ * 针对所有方法的增强:(不带有切点的切面)
  * @author Administrator
  *
  */

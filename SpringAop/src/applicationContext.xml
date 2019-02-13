@@ -3,6 +3,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="
   http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+  <!-- 不带有切点的切面 -->
   <!--定义目标对象  -->
   <bean id="customerDao" class="cn.aop.CustomerDaoImpl"></bean>
   <!-- 定义增强 -->
@@ -15,6 +16,41 @@
   <property name="proxyInterfaces" value="cn.aop.CustomerDao"/>
   <!-- 要使用value；增强的id -->
   <property name="interceptorNames" value="beforeadvice"/>
-  
-  </bean>
+    </bean>
+    
+    
+  <!--  带有切点的切面 -->
+   <!--定义目标对象  -->
+   <bean id="orderDao" class="cn.aop2.OrderDao"></bean>
+    <!-- 定义增强 -->
+    <bean id="aroundAdvice" class="cn.aop2.AroundAdvice"></bean>
+    <!-- 定义切点切面:正则的 -->
+    <bean id="mypointcutAdvisor" class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+    <!-- 定义表达式，规定 哪些方法执行拦截-->
+    <!-- .任意字符，*任意个 。详细的写到那个包下的哪个类下方法（注意正则包名要进行转义）-->
+   <!--  
+    <property name="pattern" value="cn\.aop2\.OrderDao\.find.*"/>
+                         第二种如下：
+   -->
+  <!--   
+  <property name="pattern" value=".*add.*"></property>
+  -->
+   <!-- 多个方法增强,改为patterns，并且多个用','隔开 -->
+   <property name="patterns" value=".*find.*,.*delete.*"></property>
+   
+    <!-- 应用增强 -->
+    <property name="advice" ref="aroundAdvice"></property>
+    </bean>
+    
+    
+   <!-- 定义生成代理对象 -->
+   <bean id="orderDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+   <!-- 配置目标 -->
+   <property name="target" ref="orderDao"/>
+   <!-- 针对类的代理 -->
+   <property name="proxyTargetClass" value="true"/>
+   <!--在目标上 应用增强 -->
+   <property name="interceptorNames" value="mypointcutAdvisor"></property>
+   </bean>
+   
 </beans>
