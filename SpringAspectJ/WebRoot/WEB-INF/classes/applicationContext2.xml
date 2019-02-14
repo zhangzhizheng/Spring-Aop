@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd">
+	<!-- 使用xml配置进行增强 -->
+
+	<bean id="productDao" class="cn.aspectj2.ProductDao"></bean>
+	<!-- 定义切面 类 -->
+	<bean id="myaspectXml" class="cn.aspectj2.MyAspectXml"></bean>
+	<!-- 定义Aop配置 -->
+	<aop:config>
+		<!-- 定义切点 -->
+		<aop:pointcut expression="execution(* cn.aspectj2.ProductDao.add(..))" id="mypiontcut" />
+	    <aop:aspect ref="myaspectXml"><!-- 引入切面类 -->
+	    <!-- 前置通知 -->
+	 <!--    <aop:before method="before" pointcut-ref="mypiontcut"/> -->
+	 <!-- 后置通知 ,可以获取返回值-->
+	<!--  <aop:after-returning method="afterReturning" pointcut-ref="mypiontcut" returning="returnValue"/> -->
+	<aop:around method="around" pointcut-ref="mypiontcut"/>
+	    </aop:aspect>
+	</aop:config>
+</beans>

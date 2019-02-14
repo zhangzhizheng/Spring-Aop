@@ -24,7 +24,7 @@ public class MyAspect {
 	 * @Before前置通知
 	 * @param joinPoint
 	 */
-	@Before("execution(* cn.aspectj.InfoDao.add(..))")//某个类的的某个方法进行增强，如果是包下.*是包下的所有.包前的*与包要有空格
+	@Before("execution(* cn.aspectj.InfoDao.add(..))")//某个类的的某个方法进行增强，如果是包下.*是包下的所有;包前的*与包要有空格
 	public void before(JoinPoint joinPoint) {
 		//joinPoint的值：execution(void cn.aspectj.InfoDao.add())
 		System.out.println("*******前置增强"+joinPoint);
