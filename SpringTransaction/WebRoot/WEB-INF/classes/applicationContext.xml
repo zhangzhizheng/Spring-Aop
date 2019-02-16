@@ -3,25 +3,37 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="
   http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-	<!-- 配置C3P0连接池   加入jar：com.springsource.com.mchange.v2.c3p0-0.9.1.2.jar-->
+
+	<!-- 配置C3P0连接池 加入jar：com.springsource.com.mchange.v2.c3p0-0.9.1.2.jar -->
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
-	<property name="driverClass" value="com.mysql.jdbc.Driver"/>
-	<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/info"/><!-- 这里用的是jdbcUrl -->
-	<property name="user" value="root" />
-	<property name="password" value="mysql123" />
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/info" /><!-- 
+			这里用的是jdbcUrl -->
+		<property name="user" value="root" />
+		<property name="password" value="mysql123" />
 	</bean>
 	<!-- 业务类 -->
 	<bean id="accountService" class="cn.my.demo1.DaoImpl.AccountServiceImpl">
-	<!-- 在业务层注入Dao -->
-	<property name="accountDao" ref="accountDao"/>
-	
+		<!-- 在业务层注入Dao -->
+		<property name="accountDao" ref="accountDao" />
+		<!-- 在业务层注入事务管理的模板 -->
+		<property name="transactionTemplate" ref="transactionTemplate"></property>
+
 	</bean>
 	<!-- 持久层类 -->
 	<bean id="accountDao" class="cn.my.demo1.DaoImpl.AccountDaoImpl">
+
+		<!-- 注入连接池对象，通过连接池对象创建模板 -->
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- 事务管理的模板 -->
+	<bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+	<property name="transactionManager" ref="transactionManager"/>
 	
-	<!-- 注入连接池对象，通过连接池对象创建模板 -->
+	</bean>
+	<!-- 配置事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	<!-- 需要注入连接池，通过连接池获得连接 -->
 	<property name="dataSource" ref="dataSource"/>
 	</bean>
-	
-	<!-- 事务管理的模板 -->
 </beans>
