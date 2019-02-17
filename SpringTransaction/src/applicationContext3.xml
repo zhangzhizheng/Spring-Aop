@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+	http://www.springframework.org/schema/aop
+	http://www.springframework.org/schema/aop/spring-aop.xsd
+	http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<!-- 配置C3P0连接池 加入jar：com.springsource.com.mchange.v2.c3p0-0.9.1.2.jar -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/info" /><!-- 
+			这里用的是jdbcUrl -->
+		<property name="user" value="root" />
+		<property name="password" value="mysql123" />
+	</bean>
+	<!-- 业务类 -->
+	<bean id="accountService" class="cn.my.demo3.DaoImpl.AccountServiceImpl">
+		<!-- 在业务层注入Dao -->
+		<property name="accountDao" ref="accountDao" />
+		
+
+	</bean>
+	<!-- 持久层类 -->
+	<bean id="accountDao" class="cn.my.demo3.DaoImpl.AccountDaoImpl">
+
+		<!-- 注入连接池对象，通过连接池对象创建模板 -->
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- 事务管理器 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<!-- 注入 连接池 -->
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- 定义一个增强 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<!-- 增强的属性 -->
+		<tx:attributes>
+		<!-- tx:method的属性有：
+		isolation："DEFAULT"*****事务的隔离级别
+		read-only="false" ******是否只读
+		timeout="-1" ***********过期时间
+		propagation="REQUIRED"*事务的传播行为
+		no-rollback-for=""*****发生哪些异常不会滚
+		rollback-for=""********发生哪些异常回滚事务
+		 -->
+		<tx:method name="transfer"/>
+		</tx:attributes>
+	</tx:advice>
+	<!-- aop配置定义切面切点的信息 -->
+	<aop:config>
+		<!-- 定义切点：哪些类的哪些方法应用增强 -->
+		<aop:pointcut
+			expression="execution(* cn.my.demo3.DaoImpl.AccountServiceImpl.*(..))"
+			id="mypointcut" />
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="mypointcut" />
+	</aop:config>
+	
+	
+	
+</beans>
